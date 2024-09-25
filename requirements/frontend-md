@@ -1,0 +1,214 @@
+# Project overview
+Use this guide to build a web app where users can give a text prompt to generate image using model hosted on Replicate.
+
+# Feature requirements
+- We will use Next.js, Shadcn, Lucid, Supabase, Clerk
+- Create a form where users can put in prompt, and clicking on button that calls the replicate model to generate image
+  - Have a nice UI & animation when the image is blank or generating
+  - Display all the images ever generated in grid
+  - When hover each image, an icon button for download, and an icon button for like should be shown up
+
+# Relevant docs
+
+Install Replicate’s Node.js client library
+npm install replicate
+
+Copy
+Set the REPLICATE_API_TOKEN environment variable
+in the .env.local file
+
+Visibility
+
+Copy
+Find your API token in your account settings.
+
+Import and set up the client
+import Replicate from "replicate";
+
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN,
+});
+
+Copy
+Run paresh795/mukul-img-gen using Replicate’s API. Check out the model's schema for an overview of inputs and outputs.
+
+const output = await replicate.run(
+  "paresh795/mukul-img-gen:d965dcd22a46b22b8f3c3a55629f436c9adff779628fdcf303b0e5eb96e4b35e",
+  {
+    input: {
+      model: "dev",
+      lora_scale: 1,
+      num_outputs: 1,
+      aspect_ratio: "1:1",
+      output_format: "webp",
+      guidance_scale: 3.5,
+      output_quality: 90,
+      prompt_strength: 0.8,
+      extra_lora_scale: 1,
+      num_inference_steps: 28
+    }
+  }
+);
+console.log(output);
+
+Copy
+To learn more, take a look at the guide on getting started with Node.js.
+
+
+nput schema
+Table
+JSON
+The fields you can use to run this model with an API. If you don't give a value for a field its default value will be used.
+
+Field	Type	Default value	Description
+prompt	
+string
+Prompt for generated image. If you include the `trigger_word` used in the training process you are more likely to activate the trained object, style, or concept in the resulting image.
+image	
+string
+Input image for img2img or inpainting mode. If provided, aspect_ratio, width, and height inputs are ignored.
+mask	
+string
+Input mask for inpainting mode. Black areas will be preserved, white areas will be inpainted. Must be provided along with 'image' for inpainting mode.
+aspect_ratio	
+string
+(enum)
+1:1
+Options:
+
+1:1, 16:9, 21:9, 3:2, 2:3, 4:5, 5:4, 3:4, 4:3, 9:16, 9:21, custom
+
+Aspect ratio for the generated image in text-to-image mode. The size will always be 1 megapixel, i.e. 1024x1024 if aspect ratio is 1:1. To use arbitrary width and height, set aspect ratio to 'custom'. Note: Ignored in img2img and inpainting modes.
+width	
+integer
+Min: 256
+
+Max: 1440
+
+Width of the generated image in text-to-image mode. Only used when aspect_ratio=custom. Must be a multiple of 16 (if it's not, it will be rounded to nearest multiple of 16). Note: Ignored in img2img and inpainting modes.
+height	
+integer
+Min: 256
+
+Max: 1440
+
+Height of the generated image in text-to-image mode. Only used when aspect_ratio=custom. Must be a multiple of 16 (if it's not, it will be rounded to nearest multiple of 16). Note: Ignored in img2img and inpainting modes.
+num_outputs	
+integer
+1
+Min: 1
+
+Max: 4
+
+Number of images to output.
+lora_scale	
+number
+1
+Min: -1
+
+Max: 2
+
+Determines how strongly the main LoRA should be applied. Sane results between 0 and 1.
+num_inference_steps	
+integer
+28
+Min: 1
+
+Max: 50
+
+Number of inference steps. More steps can give more detailed images, but take longer.
+model	
+string
+(enum)
+dev
+Options:
+
+dev, schnell
+
+Which model to run inferences with. The dev model needs around 28 steps but the schnell model only needs around 4 steps.
+guidance_scale	
+number
+3.5
+Max: 10
+
+Guidance scale for the diffusion process. Lower values can give more realistic images. Good values to try are 2, 2.5, 3 and 3.5
+prompt_strength	
+number
+0.8
+Max: 1
+
+Prompt strength when using img2img / inpaint. 1.0 corresponds to full destruction of information in image
+seed	
+integer
+Random seed. Set for reproducible generation.
+extra_lora	
+string
+Combine this fine-tune with another LoRA. Supports Replicate models in the format <owner>/<username> or <owner>/<username>/<version>, HuggingFace URLs in the format huggingface.co/<owner>/<model-name>, CivitAI URLs in the format civitai.com/models/<id>[/<model-name>], or arbitrary .safetensors URLs from the Internet. For example, 'fofr/flux-pixar-cars'
+extra_lora_scale	
+number
+1
+Min: -1
+
+Max: 2
+
+Determines how strongly the extra LoRA should be applied.
+output_format	
+string
+(enum)
+webp
+Options:
+
+webp, jpg, png
+
+Format of the output images.
+output_quality	
+integer
+90
+Max: 100
+
+Quality when saving the output images, from 0 to 100. 100 is best quality, 0 is lowest quality. Not relevant for .png outputs
+disable_safety_checker	
+boolean
+False
+Disable safety checker for generated images.
+Output schema
+The shape of the response you’ll get when you run this model with an API.
+
+Schema
+{
+  "type": "array",
+  "items": {
+    "type": "string",
+    "format": "uri"
+  },
+  "title": "Output"
+}
+
+# Current File structure
+
+mukul-img-gen
+├── .next
+├── app
+│   ├── fonts
+│   ├── layout.tsx
+│   └── page.tsx
+├── components
+│   └── ui
+├── lib
+├── public
+│   └── favicon.ico
+├── styles
+│   └── globals.css
+├── .eslintrc.json
+├── .gitignore
+├── README.md
+├── next-env.d.ts
+├── next.config.mjs
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── tailwind.config.js
+└── tsconfig.json
+
+
+
