@@ -12,6 +12,7 @@ import { Loader2, Info } from 'lucide-react';
 import AccentShape from '@/components/ui/AccentShape';
 import ExamplePrompts from '@/components/ui/ExamplePrompts';
 import GeneratedImagesGrid from '@/components/ui/GeneratedImagesGrid';
+import ImageCarousel from '@/components/ui/ImageCarousel';
 
 export default function Home() {
   const { user, isLoaded } = useUser();
@@ -202,13 +203,17 @@ export default function Home() {
           </div>
 
           {generatedImages.length > 0 && (
-            <div className="mt-12 max-w-6xl mx-auto">
-              <h2 className="text-2xl font-bold mb-4 text-white">Generated Images:</h2>
-              <GeneratedImagesGrid 
-                images={generatedImages} 
-                aspectRatio={aspectRatio}
-              />
-            </div>
+            <>
+              <div className="mt-12">
+                <GeneratedImagesGrid 
+                  images={generatedImages} 
+                  aspectRatio={aspectRatio}
+                />
+              </div>
+              <div className="mt-12">
+                <ImageCarousel images={generatedImages} />
+              </div>
+            </>
           )}
         </SignedIn>
       </div>
